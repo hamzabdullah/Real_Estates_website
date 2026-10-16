@@ -4,12 +4,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 from properties.views import home, property_detail, toggle_favorite
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-
+    path('contact/', include('contactus.urls')),
     path('', home, name='home'),
 
     path(

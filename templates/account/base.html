@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Login | Toronto Estates</title>
+    <title>{% block title %}Toronto Estates{% endblock %}</title>
 
     <style>
         * {
@@ -35,14 +35,18 @@
             box-shadow: 0 12px 40px #172a2612;
         }
 
-        .auth-logo {
+        .auth-logo,
+        .auth-logo:visited,
+        .auth-logo:hover,
+        .auth-logo:active {
             display: block;
             margin-bottom: 28px;
             text-align: center;
             font-size: 25px;
             font-weight: bold;
-            color: #6AA698;
-            text-decoration: none;
+            color: #6AA698 !important;
+            text-decoration: none !important;
+            cursor: pointer;
         }
 
         h1 {
@@ -98,14 +102,17 @@
     </style>
 </head>
 
-<body>
-    <main class="auth-page">
-        <section class="auth-card">
-            <a class="auth-logo" href="/">Toronto Estates.</a>
+<body class="{% block body_class %}{% endblock %}">
+    <main class="{% block page_class %}auth-page{% endblock %}">
+        <section class="{% block card_class %}auth-card{% endblock %}">
+
+            
+            <a class="auth-logo" href="/" style="color: #6AA698; text-decoration: none;">Toronto Estates.</a>
+
 
             {% block content %}{% endblock %}
 
-            <a class="auth-home" href="/">← Back to Home</a>
+           
         </section>
     </main>
 </body>

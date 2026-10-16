@@ -475,19 +475,38 @@
                 transition: none;
             }
         }
+        
+        .logo .logo-link,
+        .logo .logo-link:visited,
+        .logo .logo-link:hover,
+        .logo .logo-link:active {
+            color: #438575 !important;
+            text-decoration: none !important;
+            cursor: pointer;
+            display: inline-block;
+        }
+
     </style>
 </head>
 
 <body>
 
 <nav>
-    <div class="logo">Toronto Estates.</div>
+    
+            
+            <div class="logo">
+                <a href="/" class="logo-link">Toronto Estates.</a>
+            </div>
+
+
 
     <div class="nav-links">
         <a href="/">Home</a>
         <a href="#properties">Buy</a>
         <a href="#properties">Rent</a>
-        <a href="#contact">Contact</a>
+        
+        <a href="{% url 'contactus:contact' %}">Contact</a>
+
 
         {% if user.is_authenticated %}
             <span class="welcome-user">

@@ -14,7 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / '.env')
+load_dotenv(BASE_DIR / '.env', override=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
@@ -55,7 +55,7 @@ INSTALLED_APPS = [
 
     'accounts',
     'properties',
-
+    'contactus',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -140,18 +140,23 @@ STATIC_URL = 'static/'
 
 
 
+
+
 MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
-        'OPTIONS': {
-            'host': 'smtp.gmail.com',
-            'port': 465,
-            'username': os.environ.get('EMAIL_HOST_USER', ''),
-            'password': os.environ.get('EMAIL_HOST_PASSWORD', ''),
-            'use_ssl': True,
+    "default": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": "smtp.gmail.com",
+            "port": 465,
+            "username": os.getenv("EMAIL_HOST_USER", ""),
+            "password": os.getenv("EMAIL_HOST_PASSWORD", ""),
+            "use_tls": False,
+            "use_ssl": True,
+            "timeout": 30,
         },
     },
 }
+
 
 DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', '')
 AUTH_USER_MODEL = 'accounts.User'
@@ -176,3 +181,30 @@ SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 DEFAULT_FROM_EMAIL = 'noreply@torontoestates.com'
 LOGIN_URL = 'account_login'
+
+
+# Email configuration for Gmail SMTP
+MAILERS = {
+    "default": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": "smtp.gmail.com",
+            "port": 587,
+            "username": os.getenv("EMAIL_HOST_USER", ""),
+            "password": os.getenv("EMAIL_HOST_PASSWORD", ""),
+            "use_tls": True,
+            "use_ssl": False,
+            "timeout": 20,
+        },
+    },
+}
+
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    os.getenv("EMAIL_HOST_USER", ""),
+)
+
+CONTACT_RECIPIENT_EMAIL = os.getenv(
+    "CONTACT_RECIPIENT_EMAIL",
+    "hamzaabdullah973@gmail.com",
+)

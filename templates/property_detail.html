@@ -816,7 +816,7 @@ nav > a:hover {
 
         <a
             class="contact"
-            href="mailto:info@torontoestates.example?subject=Property%20Inquiry"
+            href="{% url 'contactus:contact' %}?property_id={{ property.id }}"
         >
             Inquire About This Property
         </a>

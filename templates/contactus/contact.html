@@ -1,0 +1,530 @@
+
+{% extends "account/base.html" %}
+
+{% block body_class %}contact-body{% endblock %}
+{% block page_class %}contact-page-wrapper{% endblock %}
+{% block card_class %}contact-card-wrapper{% endblock %}
+
+{% block content %}
+<style>
+    body.contact-body {
+        background: #f7f9f8;
+    }
+
+    .contact-page-wrapper,
+    .contact-page-wrapper * {
+        box-sizing: border-box;
+    }
+
+    .contact-page-wrapper {
+        display: block;
+        width: 100%;
+        max-width: none;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .contact-card-wrapper {
+        display: block;
+        width: 100%;
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 0;
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .contact-card-wrapper > .auth-logo,
+    .contact-card-wrapper > .auth-home {
+        display: none;
+    }
+
+    .contact-page {
+        --contact-green: #6aa698;
+        width: 100%;
+        max-width: none;
+        margin: 0 auto 30px;
+        padding: 0;
+        color: #17251f;
+    }
+
+    .contact-header {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .contact-eyebrow {
+        display: inline-block;
+        padding: 6px 12px;
+        background: #e3f0ec;
+        color: #28594c;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .contact-header h1 {
+        margin: 12px 0 8px;
+        font-size: clamp(28px, 3vw, 40px);
+        line-height: 1.2;
+        letter-spacing: -1px;
+    }
+
+    .contact-header p {
+        margin: 0;
+        color: #68766f;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .contact-layout {
+        display: grid;
+        grid-template-columns: minmax(250px, 0.7fr) minmax(0, 2fr);
+        width: 100%;
+        border: 1px solid #e5ece8;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 12px 40px rgba(24, 55, 43, 0.10);
+    }
+
+    .contact-sidebar {
+        position: relative;
+        overflow: hidden;
+        padding: 34px 28px;
+        background: #244d40;
+        color: #fff;
+    }
+
+    .contact-sidebar::after {
+        content: "";
+        position: absolute;
+        width: 210px;
+        height: 210px;
+        right: -90px;
+        bottom: -90px;
+        border: 35px solid rgba(255, 255, 255, 0.06);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .contact-sidebar h2 {
+        margin: 0 0 10px;
+        color: #fff;
+        font-size: 25px;
+        line-height: 1.3;
+    }
+
+    .contact-sidebar-intro {
+        margin: 0 0 28px;
+        color: #d1e2da;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .contact-method {
+        margin: 0 0 24px;
+        overflow-wrap: anywhere;
+    }
+
+    .contact-method-label {
+        margin: 0 0 7px;
+        color: #b9d8cc;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .contact-method p {
+        margin: 0;
+        color: #fff;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .contact-method a:not(.contact-whatsapp) {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .contact-method a:not(.contact-whatsapp):hover {
+        text-decoration: underline;
+    }
+
+    .contact-whatsapp {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 11px 16px;
+        border-radius: 9px;
+        background: #d9eee5;
+        color: #204b3d !important;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background 0.2s, transform 0.2s;
+    }
+
+    .contact-whatsapp:hover {
+        background: #fff;
+        transform: translateY(-1px);
+    }
+
+    .contact-sidebar-note {
+        margin-top: 30px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        color: #d1e2da;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .contact-form-panel {
+        min-width: 0;
+        padding: 34px 40px;
+    }
+
+    .contact-form-heading {
+        margin-bottom: 24px;
+    }
+
+    .contact-form-heading h2 {
+        margin: 0 0 7px;
+        color: #17251f;
+        font-size: 24px;
+        letter-spacing: -0.4px;
+    }
+
+    .contact-form-heading p {
+        margin: 0;
+        color: #748078;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .contact-alert {
+        margin-bottom: 18px;
+        padding: 12px 14px;
+        border-radius: 9px;
+        background: #e3f4e9;
+        color: #20583a;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .contact-alert.error {
+        background: #fff0f0;
+        color: #a12626;
+    }
+
+    .contact-fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 17px 20px;
+    }
+
+    .contact-field {
+        min-width: 0;
+    }
+
+    .contact-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .contact-field label {
+        display: block;
+        margin-bottom: 7px;
+        color: #293c32;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .contact-field input,
+    .contact-field textarea {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #dce5df;
+        border-radius: 9px;
+        outline: none;
+        background: #f9fbfa;
+        color: #17251f;
+        font-family: inherit;
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s,
+                    background 0.2s;
+    }
+
+    .contact-field input {
+        height: 44px;
+    }
+
+    .contact-field textarea {
+        min-height: 100px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .contact-field input:focus,
+    .contact-field textarea:focus {
+        border-color: var(--contact-green);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(106, 166, 152, 0.15);
+    }
+
+    .contact-field input::placeholder,
+    .contact-field textarea::placeholder {
+        color: #9aa69f;
+    }
+
+    .contact-field-error {
+        margin-top: 5px;
+        color: #b42318;
+        font-size: 12px;
+    }
+
+    .contact-submit {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 20px;
+        padding: 14px 18px;
+        border: none;
+        border-radius: 9px;
+        background: var(--contact-green);
+        color: #10251d;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s;
+    }
+
+    .contact-submit:hover {
+        background: #589486;
+        transform: translateY(-1px);
+    }
+
+    .contact-privacy {
+        margin: 12px 0 0;
+        text-align: center;
+        color: #859189;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+        .contact-page-wrapper {
+            padding: 16px;
+        }
+
+        .contact-layout {
+            grid-template-columns: minmax(210px, 0.75fr) minmax(0, 1.5fr);
+        }
+
+        .contact-sidebar {
+            padding: 28px 22px;
+        }
+
+        .contact-form-panel {
+            padding: 28px 24px;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .contact-page-wrapper {
+            padding: 12px;
+        }
+
+        .contact-header {
+            margin-bottom: 20px;
+        }
+
+        .contact-header h1 {
+            letter-spacing: -0.5px;
+        }
+
+        .contact-layout {
+            grid-template-columns: minmax(0, 1fr);
+            border-radius: 15px;
+        }
+
+        .contact-sidebar {
+            padding: 25px 22px;
+        }
+
+        .contact-sidebar-intro {
+            margin-bottom: 22px;
+        }
+
+        .contact-method {
+            margin-bottom: 19px;
+        }
+
+        .contact-sidebar-note {
+            margin-top: 22px;
+        }
+
+        .contact-form-panel {
+            padding: 25px 20px;
+        }
+
+        .contact-form-heading {
+            margin-bottom: 20px;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .contact-fields {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 15px;
+        }
+
+        .contact-field.full-width {
+            grid-column: auto;
+        }
+    }
+</style>
+
+<main class="contact-page">
+    <header class="contact-header">
+        <span class="contact-eyebrow">We're here to help</span>
+        <h1>Let's Talk About Your Next Home</h1>
+        <p>
+            Questions about buying, renting, or listing a property?
+            Get in touch.
+        </p>
+    </header>
+
+    <div class="contact-layout">
+        <aside class="contact-sidebar">
+            <h2>Get in touch</h2>
+
+            <p class="contact-sidebar-intro">
+                Tell us what you're looking for. Our team is ready
+                to help you take the next step.
+            </p>
+
+            <div class="contact-method">
+                <p class="contact-method-label">Email us</p>
+
+                {% if contact_settings and contact_settings.email %}
+                    <p>
+                        <a href="mailto:{{ contact_settings.email }}">
+                            {{ contact_settings.email }}
+                        </a>
+                    </p>
+                {% else %}
+                    <p>Email details will be available soon.</p>
+                {% endif %}
+            </div>
+
+            <div class="contact-method">
+                <p class="contact-method-label">Chat with us</p>
+                <p>Prefer a quick conversation? Reach us on WhatsApp.</p>
+
+                {% if whatsapp_url %}
+                    <a
+                        class="contact-whatsapp"
+                        href="{{ whatsapp_url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Chat on WhatsApp <span aria-hidden="true">↗</span>
+                    </a>
+                {% else %}
+                    <p>WhatsApp contact is currently unavailable.</p>
+                {% endif %}
+            </div>
+
+            <div class="contact-sidebar-note">
+                Whether you're searching for a home or have a question
+                about a listing, we're happy to hear from you.
+            </div>
+        </aside>
+
+        <section class="contact-form-panel">
+            {% if selected_property %}
+    <div class="contact-alert">
+        <strong>Property inquiry:</strong>
+        {{ selected_property.title }}
+        <br>
+        <a href="{% url 'property_detail' selected_property.id %}">
+            View this property
+        </a>
+    </div>
+{% endif %}
+            <div class="contact-form-heading">
+                <h2>Send us a message</h2>
+                <p>
+                    Fill in the details below and we'll be glad
+                    to hear from you.
+                </p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div
+                        class="contact-alert{% if message.tags == 'error' %} error{% endif %}"
+                        role="status"
+                    >
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" class="contact-form">
+    {% csrf_token %}
+
+    {% if property_id %}
+        <input
+            type="hidden"
+            name="property_id"
+            value="{{ property_id }}"
+        >
+    {% endif %}
+
+                <div class="contact-fields">
+                    {% for field in form %}
+                        <div class="contact-field{% if field.name == 'subject' or field.name == 'message' %} full-width{% endif %}">
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+
+                            {{ field }}
+
+                            {% for error in field.errors %}
+                                <div class="contact-field-error">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="contact-field-error">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <button type="submit" class="contact-submit">
+                    Send Message <span aria-hidden="true">→</span>
+                </button>
+
+                <p class="contact-privacy">
+                    Your details will be used to respond to your enquiry.
+                </p>
+            </form>
+        </section>
+    </div>
+</main>
+{% endblock %}
