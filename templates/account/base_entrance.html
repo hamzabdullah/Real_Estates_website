@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block head_title %}Toronto Estates{% endblock %}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #172a26;
+            background: #f7f9f8;
+        }
+
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 16px;
+            background: linear-gradient(135deg, #e2f0eb, #f7f9f8);
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 36px;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 12px 40px #172a2612;
+        }
+
+        .auth-logo {
+            display: block;
+            margin-bottom: 28px;
+            color: #6AA698;
+            font-size: 25px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .auth-card h1 {
+            margin: 0 0 10px;
+            text-align: center;
+            font-size: 29px;
+        }
+
+        .auth-subtitle {
+            margin: 0 0 26px;
+            color: #666;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .auth-field {
+            margin-bottom: 18px;
+        }
+
+        .auth-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .auth-field input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d7dfdc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .auth-field input:focus {
+            outline: 2px solid #6AA698;
+        }
+
+        /* Password field and eye icon */
+        .auth-password-wrap {
+            position: relative;
+            width: 100%;
+        }
+
+        .auth-password-wrap input {
+            padding-right: 45px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            border: none;
+            background: transparent;
+            color: #6AA698;
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        .password-toggle:hover {
+            background: transparent;
+            opacity: 1;
+        }
+
+        .password-toggle svg {
+            width: 19px;
+            height: 19px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .auth-card .errorlist {
+            color: #b42318;
+            font-size: 13px;
+            padding-left: 20px;
+        }
+
+        .auth-submit,
+        .auth-google {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .auth-submit {
+            border: 0;
+            background: #6AA698;
+            color: white;
+        }
+
+        .auth-submit:hover {
+            background: #438575;
+        }
+
+        .auth-switch {
+            margin: 22px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .auth-switch a,
+        .auth-home {
+            color: #438575;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .auth-divider {
+            margin: 20px 0;
+            color: #888;
+            text-align: center;
+        }
+
+        .auth-google {
+            border: 1px solid #d7dfdc;
+            background: white;
+            color: #172a26;
+        }
+
+        .auth-google:hover {
+            background: #f7f9f8;
+        }
+
+        .auth-home {
+            display: block;
+            margin-top: 24px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 26px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% block content %}{% endblock %}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const eyeOpen = `
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>`;
+
+            const eyeClosed = `
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 3l18 18"></path>
+                    <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                    <path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a15 15 0 0 1-4 4.7"></path>
+                    <path d="M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7a10.7 10.7 0 0 0 3-.4"></path>
+                </svg>`;
+
+            document.querySelectorAll(
+                '.auth-field input[type="password"]'
+            ).forEach(function (input) {
+                const wrapper = document.createElement("div");
+                wrapper.className = "auth-password-wrap";
+
+                input.parentNode.insertBefore(wrapper, input);
+                wrapper.appendChild(input);
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "password-toggle";
+                button.innerHTML = eyeOpen;
+                button.setAttribute("aria-label", "Show password");
+                button.setAttribute("title", "Show password");
+
+                button.addEventListener("click", function () {
+                    const isHidden = input.type === "password";
+
+                    input.type = isHidden ? "text" : "password";
+                    button.innerHTML = isHidden ? eyeClosed : eyeOpen;
+                    button.setAttribute(
+                        "aria-label",
+                        isHidden ? "Hide password" : "Show password"
+                    );
+                    button.setAttribute(
+                        "title",
+                        isHidden ? "Hide password" : "Show password"
+                    );
+                });
+
+                wrapper.appendChild(button);
+            });
+        });
+    </script>
+</body>
+</html>

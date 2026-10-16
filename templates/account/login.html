@@ -1,0 +1,57 @@
+
+{% extends "account/base_entrance.html" %}
+
+{% block head_title %}Login | Toronto Estates{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <a class="auth-logo" href="/">Toronto Estates.</a>
+
+        <h1>Welcome Back</h1>
+        <p class="auth-subtitle">Login to continue your property search.</p>
+        
+
+        <form method="post" action="{% url 'account_login' %}">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            {% for field in form %}
+                <div class="auth-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+            {% endif %}
+
+            <button class="auth-submit" type="submit">Login</button>
+        </form>
+        
+<p style="text-align: right; margin: 10px 0;">
+    <a href="{% url 'account_reset_password' %}"
+       style="color: #438575; text-decoration: none; font-weight: 600;">
+        Forgot Password?
+    </a>
+</p>
+
+
+        <p class="auth-switch">
+            Don't have an account?
+            <a href="{% url 'account_signup' %}">Sign Up</a>
+        </p>
+
+        <div class="auth-divider">or</div>
+
+        <a class="auth-google" href="/accounts/google/login/">
+            Continue with Google
+        </a>
+
+        <a class="auth-home" href="/">← Back to Home</a>
+    </div>
+</div>
+{% endblock %}

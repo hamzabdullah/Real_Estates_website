@@ -1,0 +1,40 @@
+
+{% extends "account/base_entrance.html" %}
+
+{% block head_title %}Continue with Google | Toronto Estates{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <a class="auth-logo" href="/">Toronto Estates.</a>
+
+        <h1>Continue with Google</h1>
+
+        <p class="auth-subtitle">
+            You're almost there! Confirm your Google account to continue.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            {% for field in form %}
+                <div class="auth-field">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+
+            <button class="auth-submit" type="submit">
+                Continue
+            </button>
+        </form>
+
+        <a class="auth-home" href="/">← Back to Home</a>
+    </div>
+</div>
+{% endblock %}

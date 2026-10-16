@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Login | Toronto Estates</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e2f0eb, #f7f9f8);
+            color: #172a26;
+        }
+
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px 16px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            padding: 36px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px #172a2612;
+        }
+
+        .auth-logo {
+            display: block;
+            margin-bottom: 28px;
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            color: #6AA698;
+            text-decoration: none;
+        }
+
+        h1 {
+            margin: 0 0 16px;
+            text-align: center;
+            font-size: 27px;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        button,
+        input[type="submit"] {
+            width: 100%;
+            padding: 13px;
+            border: 0;
+            border-radius: 7px;
+            background: #6AA698;
+            color: #fff;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover,
+        input[type="submit"]:hover {
+            background: #438575;
+        }
+
+        a {
+            color: #438575;
+        }
+
+        .auth-card form {
+            margin-top: 22px;
+        }
+
+        .auth-home {
+            display: block;
+            margin-top: 22px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 26px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="auth-page">
+        <section class="auth-card">
+            <a class="auth-logo" href="/">Toronto Estates.</a>
+
+            {% block content %}{% endblock %}
+
+            <a class="auth-home" href="/">← Back to Home</a>
+        </section>
+    </main>
+</body>
+</html>

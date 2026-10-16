@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toronto Estates | Find Your Dream Home</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #172a26;
+            background: #f7f9f8;
+        }
+
+        nav {
+            background: #fff;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            color: #438575;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: #172a26;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        nav .auth-btn {
+            display: inline-block;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #6AA698;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        nav .signup-btn,
+        nav .logout-btn {
+            background: #6AA698;
+            color: #fff;
+        }
+
+        nav .google-btn {
+            background: #fff;
+            color: #333;
+            border-color: #ddd;
+        }
+
+        .welcome-user {
+            font-weight: 600;
+            color: #438575;
+        }
+
+        .nav-form {
+            margin: 0;
+        }
+
+        .hero {
+            background: #6AA698;
+            padding: 65px 7%;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 52px);
+            margin-bottom: 15px;
+        }
+
+        .hero > p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        /* Main search bar */
+        .search {
+            background: #fff;
+            padding: 10px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 900px;
+            margin: auto;
+            box-shadow: 0 12px 35px #172a261a;
+            text-align: left;
+        }
+
+        .search-main {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+            gap: 10px;
+            padding-left: 10px;
+        }
+
+        .search-icon {
+            color: #438575;
+            font-size: 23px;
+        }
+
+        .search-main input {
+            width: 100%;
+            min-width: 0;
+            border: none;
+            outline: none;
+            padding: 13px 5px;
+            font-size: 16px;
+            color: #172a26;
+            background: transparent;
+        }
+
+        .filter-toggle {
+            background: #fff;
+            color: #172a26;
+            border: 1px solid #d9e5e0;
+            border-radius: 10px;
+            padding: 13px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .filter-toggle:hover,
+        .filter-toggle[aria-expanded="true"] {
+            background: #eaf4f0;
+            border-color: #6AA698;
+        }
+
+        .search-submit {
+            background: #172a26;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 22px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .search-submit:hover {
+            background: #31584e;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        /* Expandable filters */
+        .filter-panel {
+            max-width: 900px;
+            margin: 14px auto 0;
+            padding: 22px;
+            background: #fff;
+            border-radius: 14px;
+            text-align: left;
+            box-shadow: 0 12px 35px #172a261a;
+        }
+
+        .filter-panel[hidden] {
+            display: none;
+        }
+
+        .filter-heading {
+            font-size: 18px;
+            margin-bottom: 18px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .field label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #344b44;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #d9e1dd;
+            border-radius: 8px;
+            background: #fff;
+            color: #172a26;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: 2px solid #6AA698;
+            outline-offset: 1px;
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .clear {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 16px;
+            color: #172a26;
+            background: #f2f6f4;
+            border: 1px solid #d9e1dd;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .apply-filters {
+            padding: 12px 18px;
+            background: #6AA698;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .section {
+            padding: 55px 7%;
+        }
+
+        .section h2 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .intro {
+            color: #666;
+            margin-bottom: 28px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .property {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px #0000000d;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .property:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px #00000018;
+        }
+
+        .property-image-wrap {
+            position: relative;
+            overflow: hidden;
+            background: #e2f0eb;
+        }
+
+        .property-image-link {
+            display: block;
+            overflow: hidden;
+            background: #e2f0eb;
+        }
+
+        .property img {
+            width: 100%;
+            height: 240px;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.35s ease;
+        }
+
+        .property-image-link:hover img {
+            transform: scale(1.05);
+        }
+
+        .property-image-link:focus-visible {
+            outline: 3px solid #438575;
+            outline-offset: -3px;
+        }
+
+        .favorite-form {
+            margin: 0;
+            padding: 0;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 44px;
+            height: 44px;
+            margin: 0;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background: #fff;
+            color: #438575;
+            font-size: 27px;
+            cursor: pointer;
+            box-shadow: 0 3px 12px #00000025;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, color 0.2s ease;
+            z-index: 2;
+        }
+
+        .favorite-btn:hover {
+            background: #fff;
+            transform: scale(1.1);
+        }
+
+        .favorite-btn.active {
+            color: #e63946;
+        }
+
+        .favorite-btn:focus-visible {
+            outline: 3px solid #438575;
+            outline-offset: 3px;
+        }
+
+        .property-info {
+            padding: 20px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e2f0eb;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .property h3 {
+            margin-bottom: 10px;
+        }
+
+        .property h3 a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .property h3 a:hover {
+            color: #438575;
+        }
+
+        .price {
+            color: #438575;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        .details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .empty {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+            grid-column: 1 / -1;
+        }
+
+        footer {
+            background: #172a26;
+            color: #fff;
+            text-align: center;
+            padding: 30px;
+        }
+
+        @media (max-width: 650px) {
+            .hero {
+                padding: 45px 5%;
+            }
+
+            .search {
+                flex-wrap: wrap;
+            }
+
+            .search-main {
+                flex-basis: 100%;
+                border-bottom: 1px solid #edf0ee;
+            }
+
+            .filter-toggle,
+            .search-submit {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-panel {
+                padding: 18px;
+            }
+        }
+
+        @media (max-width: 550px) {
+            nav {
+                justify-content: center;
+            }
+
+            .nav-links {
+                justify-content: center;
+            }
+
+            .section {
+                padding: 40px 5%;
+            }
+
+            .filter-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .filter-actions a,
+            .filter-actions button {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .property,
+            .property img,
+            .favorite-btn {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">Toronto Estates.</div>
+
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="#properties">Buy</a>
+        <a href="#properties">Rent</a>
+        <a href="#contact">Contact</a>
+
+        {% if user.is_authenticated %}
+            <span class="welcome-user">
+                Hi, {{ user.first_name|default:user.username }}
+            </span>
+
+            <form method="post"
+                  action="{% url 'account_logout' %}"
+                  class="nav-form">
+                {% csrf_token %}
+                <button type="submit" class="auth-btn logout-btn">
+                    Logout
+                </button>
+            </form>
+        {% else %}
+            <a href="{% url 'account_login' %}" class="auth-btn">
+                Login
+            </a>
+
+            <a href="{% url 'account_signup' %}"
+               class="auth-btn signup-btn">
+                Sign Up
+            </a>
+
+            <a href="/accounts/google/login/"
+               class="auth-btn google-btn">
+                Continue with Google
+            </a>
+        {% endif %}
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>Find a Place You'll Love</h1>
+    <p>Discover homes and properties across Toronto.</p>
+
+    <form class="search" method="get" action="/">
+        <div class="search-main">
+            <span class="search-icon" aria-hidden="true">&#9906;</span>
+            <input
+                type="search"
+                name="q"
+                placeholder="Search homes, areas or addresses..."
+                value="{{ q|default:'' }}"
+                aria-label="Search properties">
+        </div>
+
+        <button
+            type="button"
+            class="filter-toggle"
+            id="filterToggle"
+            aria-expanded="false"
+            aria-controls="filterPanel">
+            <span aria-hidden="true">&#9776;</span>
+            Filters
+        </button>
+
+        <button type="submit" class="search-submit">
+            Search
+        </button>
+
+        <div class="filter-panel" id="filterPanel" hidden>
+            <h2 class="filter-heading">Refine your search</h2>
+
+            <div class="filter-grid">
+                <div class="field">
+                    <label for="city">City</label>
+                    <input
+                        id="city"
+                        type="text"
+                        name="city"
+                        placeholder="e.g. Toronto"
+                        value="{{ city|default:'' }}">
+                </div>
+
+                <div class="field">
+                    <label for="listing_type">Listing type</label>
+                    <select id="listing_type" name="listing_type">
+                        <option value="">Buy or Rent</option>
+                        <option value="SALE" {% if listing_type == 'SALE' %}selected{% endif %}>Buy</option>
+                        <option value="RENT" {% if listing_type == 'RENT' %}selected{% endif %}>Rent</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="bedrooms">Minimum bedrooms</label>
+                    <input
+                        id="bedrooms"
+                        type="number"
+                        name="bedrooms"
+                        min="0"
+                        step="1"
+                        placeholder="Any number"
+                        value="{{ bedrooms|default:'' }}">
+                </div>
+
+                <div class="field">
+                    <label for="min_price">Minimum price (CA$)</label>
+                    <input
+                        id="min_price"
+                        type="number"
+                        name="min_price"
+                        min="0"
+                        step="1000"
+                        placeholder="No minimum"
+                        value="{{ min_price|default:'' }}">
+                </div>
+
+                <div class="field">
+                    <label for="max_price">Maximum price (CA$)</label>
+                    <input
+                        id="max_price"
+                        type="number"
+                        name="max_price"
+                        min="0"
+                        step="1000"
+                        placeholder="No maximum"
+                        value="{{ max_price|default:'' }}">
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <a class="clear" href="/">Clear filters</a>
+                <button type="submit" class="apply-filters">
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+    </form>
+</section>
+
+<section class="section" id="properties">
+    <h2>Available Properties</h2>
+
+    <p class="intro">
+        {% if q or city or listing_type or min_price or max_price or bedrooms %}
+            Properties matching your search.
+        {% else %}
+            Explore available homes and find your next address.
+        {% endif %}
+    </p>
+
+    <div class="grid">
+        {% for property in properties %}
+            <article class="property">
+                <div class="property-image-wrap">
+                    <a class="property-image-link"
+                       href="{% url 'property_detail' property.id %}"
+                       aria-label="View {{ property.title }}">
+
+                        {% if property.image %}
+                            <img
+                                src="{{ property.image.url }}"
+                                alt="{{ property.title }}"
+                                loading="lazy">
+                        {% else %}
+                            <img
+                                src="https://placehold.co/600x400/e2f0eb/172a26?text=Property+Photo"
+                                alt="Property photo coming soon"
+                                loading="lazy">
+                        {% endif %}
+                    </a>
+
+                    <form method="post"
+                          action="{% url 'toggle_favorite' property.id %}"
+                          class="favorite-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="source" value="home">
+                        <input type="hidden"
+                               name="next"
+                               value="{{ request.get_full_path }}">
+
+                        <button
+                            type="submit"
+                            class="favorite-btn{% if property.id in favorite_ids %} active{% endif %}"
+                            aria-label="{% if property.id in favorite_ids %}Remove from{% else %}Add to{% endif %} favorites"
+                            aria-pressed="{% if property.id in favorite_ids %}true{% else %}false{% endif %}"
+                            title="{% if property.id in favorite_ids %}Remove from favorites{% else %}Add to favorites{% endif %}">
+                            <span aria-hidden="true">{% if property.id in favorite_ids %}♥{% else %}♡{% endif %}</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="property-info">
+                    <span class="tag">
+                        {{ property.get_listing_type_display }}
+                    </span>
+
+                    <h3>
+                        <a href="{% url 'property_detail' property.id %}">
+                            {{ property.title }}
+                        </a>
+                    </h3>
+
+                    <p>{{ property.address }}, {{ property.city }}</p>
+
+                    <p class="price">
+                        CA$ {{ property.price|floatformat:0 }}
+                    </p>
+
+                    <p class="details">
+                        {{ property.bedrooms }} Beds
+                        &nbsp;|&nbsp;
+                        {{ property.bathrooms }} Baths
+                        &nbsp;|&nbsp;
+                        {{ property.area_sqft }} sqft
+                    </p>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty">
+                <h3>No matching properties found.</h3>
+                <p>
+                    Try changing your search or clearing the filters
+                    to see all listings.
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<footer id="contact">
+    <h3>Toronto Estates</h3>
+    <p>Helping you find your next home.</p>
+    <p>© 2026 Toronto Estates. All rights reserved.</p>
+</footer>
+
+<script>
+    const filterToggle = document.getElementById('filterToggle');
+    const filterPanel = document.getElementById('filterPanel');
+
+    filterToggle.addEventListener('click', () => {
+        const isExpanded =
+            filterToggle.getAttribute('aria-expanded') === 'true';
+
+        filterToggle.setAttribute('aria-expanded', String(!isExpanded));
+        filterPanel.hidden = isExpanded;
+    });
+
+    // Keep filters open if the user has already applied any.
+    const params = new URLSearchParams(window.location.search);
+    const filterNames = [
+        'city', 'listing_type', 'bedrooms', 'min_price', 'max_price'
+    ];
+
+    const hasFilters = filterNames.some((name) => params.get(name));
+
+    if (hasFilters) {
+        filterPanel.hidden = false;
+        filterToggle.setAttribute('aria-expanded', 'true');
+    }
+</script>
+
+</body>
+</html>

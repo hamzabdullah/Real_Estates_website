@@ -1,0 +1,966 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ property.title }} | Toronto Estates</title>
+
+    <style>
+        .top-search {
+    background: #fff;
+    padding: 14px 7%;
+    border-top: 1px solid #edf1ef;
+}
+
+.search-form {
+    max-width: 1000px;
+    margin: auto;
+}
+
+.search-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 18px;
+    border: 1px solid #d8e3df;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #438575;
+    box-shadow: 0 0 0 3px #6aa69825;
+}
+
+.search-btn,
+.filters-toggle,
+.apply-filters {
+    border: 0;
+    border-radius: 10px;
+    padding: 13px 18px;
+    background: #6AA698;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.filters-toggle {
+    background: #edf5f2;
+    border: 1px solid #d8e3df;
+}
+
+.filters-panel {
+    margin-top: 12px;
+    padding: 18px;
+    border: 1px solid #e0e9e5;
+    border-radius: 12px;
+    background: #f8fbf9;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.filters-panel[hidden] {
+    display: none;
+}
+
+.filter-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.filter-field input,
+.filter-field select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #d8e3df;
+    border-radius: 8px;
+    background: white;
+    color: #000;
+}
+
+.filter-actions {
+    display: flex;
+    align-items: end;
+    gap: 10px;
+}
+
+.clear-filters {
+    color: #438575;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 12px 0;
+}
+
+/* Stylish back links */
+.back-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border: 1px solid #dce8e3;
+    border-radius: 30px;
+    background: white;
+    color: #285f52;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 3px 12px #00000008;
+    transition: background .2s, transform .2s;
+}
+
+.back:hover {
+    background: #e8f3ef;
+    transform: translateY(-1px);
+}
+
+/* Full-screen gallery viewer */
+#imageLightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, .94);
+    align-items: center;
+    justify-content: center;
+    padding: 70px 80px;
+}
+
+.lightbox-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.lightbox-close,
+.lightbox-prev,
+.lightbox-next {
+    position: absolute;
+    border: 0;
+    color: white;
+    background: #ffffff20;
+    cursor: pointer;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+}
+
+.lightbox-close {
+    top: 18px;
+    right: 24px;
+    width: 46px;
+    height: 46px;
+    font-size: 32px;
+}
+
+.lightbox-prev,
+.lightbox-next {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+}
+
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
+
+.lightbox-close:hover,
+.lightbox-prev:hover,
+.lightbox-next:hover {
+    background: #6AA698;
+    color: #000;
+}
+
+@media (max-width: 600px) {
+    .top-search {
+        padding: 12px 5%;
+    }
+
+    .search-row {
+        flex-wrap: wrap;
+    }
+
+    .search-input {
+        flex-basis: 100%;
+    }
+
+    .search-btn,
+    .filters-toggle {
+        flex: 1;
+    }
+
+    .back-links {
+        flex-wrap: wrap;
+    }
+
+    #imageLightbox {
+        padding: 65px 48px;
+    }
+
+    .lightbox-prev { left: 5px; }
+    .lightbox-next { right: 5px; }
+}
+         {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f9f8;
+            color: #000;
+        }
+
+        nav {
+            background: white;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            color: #6AA698;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: black;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 22px;
+            color: #438575;
+            text-decoration: none;
+        }
+
+        .gallery {
+            display: grid;
+            gap: 12px;
+        }
+
+        /* Main image and favorite heart */
+        .main-image-wrap {
+            position: relative;
+            overflow: hidden;
+            border-radius: 14px;
+            background: #e2f0eb;
+        }
+
+        .property-image {
+            display: block;
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            background: #e2f0eb;
+        }
+
+        .favorite-form {
+            margin: 0;
+            padding: 0;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background: #fff;
+            color: #438575;
+            font-size: 29px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 12px #00000025;
+            transition: transform 0.2s ease, color 0.2s ease;
+            z-index: 2;
+        }
+
+        .favorite-btn:hover {
+            background: #fff;
+            transform: scale(1.08);
+        }
+
+        .favorite-btn.active {
+            color: #e63946;
+        }
+
+        .favorite-btn:focus-visible {
+            outline: 3px solid #438575;
+            outline-offset: 3px;
+        }
+
+        .thumbnails {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 3px 2px 8px;
+        }
+
+        .thumbnail {
+            flex: 0 0 100px;
+            height: 75px;
+            padding: 0;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            background: #e2f0eb;
+        }
+
+        .thumbnail.active {
+            border-color: #438575;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-section {
+            margin-top: 28px;
+        }
+
+        .property-video {
+            width: 100%;
+            max-height: 500px;
+            background: #172a26;
+            border-radius: 12px;
+        }
+
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            margin-top: 22px;
+            box-shadow: 0 4px 18px #0000000d;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e2f0eb;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: clamp(26px, 4vw, 38px);
+            margin-bottom: 12px;
+        }
+
+        .address {
+            color: #666;
+            margin-bottom: 18px;
+        }
+
+        .price {
+            color: #438575;
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .feature {
+            background: #f3f7f5;
+            padding: 18px;
+            border-radius: 8px;
+        }
+
+        .feature strong {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        .description {
+            color: #555;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .contact {
+            display: inline-block;
+            background: #6AA698;
+            color: black;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 14px 22px;
+            border-radius: 7px;
+            margin-top: 25px;
+        }
+
+        footer {
+            background: #172a26;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 600px) {
+            .property-image {
+                height: 260px;
+            }
+
+            .favorite-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 26px;
+                top: 10px;
+                right: 10px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .thumbnail {
+                flex-basis: 82px;
+                height: 65px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .favorite-btn {
+                transition: none;
+            }
+        }
+    #imageLightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(0, 0, 0, 0.94);
+        align-items: center;
+        justify-content: center;
+        padding: 55px 70px;
+    }  
+    /* Colorful navigation */
+nav {
+    background: linear-gradient(120deg, #e2f0eb 0%, #c4e3d8 55%, #a7d1c3 100%);
+    padding: 22px 7%;
+    border-bottom: 1px solid #b7d8cc;
+}
+
+.logo {
+    color: #285f52;
+    letter-spacing: -0.5px;
+}
+
+nav > a {
+    background: #ffffffd9;
+    color: #285f52;
+    padding: 11px 18px;
+    border-radius: 25px;
+    box-shadow: 0 3px 12px #285f5210;
+    transition: .2s ease;
+}
+
+nav > a:hover {
+    background: #fff;
+    transform: translateY(-2px);
+}
+
+/* Colorful search section */
+.top-search {
+    background: linear-gradient(135deg, #edf7f2 0%, #d8ebe3 50%, #c4e1d6 100%);
+    padding: 22px 7% 26px;
+    border-top: 0;
+    border-bottom: 1px solid #c8e0d6;
+}
+
+.search-form {
+    max-width: 1000px;
+    padding: 10px;
+    border-radius: 18px;
+    background: #ffffffd9;
+    border: 1px solid #ffffff;
+    box-shadow: 0 8px 25px #285f5212;
+}
+
+.search-row {
+    gap: 10px;
+}
+
+.search-input {
+    border-color: #e0ebe6;
+    background: #fff;
+    border-radius: 12px;
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #6AA698, #438575);
+    color: white;
+    padding-inline: 24px;
+    transition: .2s ease;
+}
+
+.search-btn:hover {
+    background: #285f52;
+    transform: translateY(-1px);
+}
+
+.filters-toggle {
+    background: #e8f3ee;
+    color: #285f52;
+    border-color: #d1e5dc;
+}
+
+.filters-toggle:hover {
+    background: #d7ebe2;
+}
+
+.filters-panel {
+    margin-top: 10px;
+    background: #f7fbf8;
+    border-color: #e0eee7;
+}
+
+@media (max-width: 600px) {
+    nav {
+        padding: 18px 5%;
+    }
+
+    .top-search {
+        padding: 16px 5% 20px;
+    }
+
+    .search-form {
+        padding: 8px;
+    }
+}  
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">Toronto Estates.</div>
+    <a href="/">Home</a>
+</nav>
+
+<section class="top-search">
+    <form class="search-form" action="/" method="get">
+        <div class="search-row">
+            <input
+                class="search-input"
+                type="search"
+                name="q"
+                placeholder="Search homes by title, city or address..."
+                aria-label="Search properties"
+            >
+
+            <button class="search-btn" type="submit">
+                Search
+            </button>
+
+            <button
+                class="filters-toggle"
+                type="button"
+                id="filtersToggle"
+                aria-expanded="false"
+                aria-controls="propertyFilters"
+            >
+                ☷ Filters
+            </button>
+        </div>
+
+        <div class="filters-panel" id="propertyFilters" hidden>
+            <div class="filter-field">
+                <label for="filterCity">City</label>
+                <input id="filterCity" name="city" placeholder="e.g. Toronto">
+            </div>
+
+            <div class="filter-field">
+                <label for="filterType">Listing type</label>
+                <select id="filterType" name="listing_type">
+                    <option value="">Sale or rent</option>
+                    <option value="SALE">For Sale</option>
+                    <option value="RENT">For Rent</option>
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label for="filterBedrooms">Bedrooms</label>
+                <input
+                    id="filterBedrooms"
+                    type="number"
+                    name="bedrooms"
+                    min="0"
+                    step="1"
+                    placeholder="Any number"
+                >
+            </div>
+
+            <div class="filter-field">
+                <label for="filterMin">Minimum price (CA$)</label>
+                <input id="filterMin" type="number" name="min_price" min="0" placeholder="No minimum">
+            </div>
+
+            <div class="filter-field">
+                <label for="filterMax">Maximum price (CA$)</label>
+                <input id="filterMax" type="number" name="max_price" min="0" placeholder="No maximum">
+            </div>
+
+            <div class="filter-actions">
+                <button class="apply-filters" type="submit">
+                    Apply filters
+                </button>
+                <a class="clear-filters" href="/">Clear</a>
+            </div>
+        </div>
+    </form>
+</section>
+
+<main class="container">
+
+    <div class="back-links">
+        <a class="back" href="/" aria-label="Back to all properties">
+            <span aria-hidden="true">←</span>
+            <span>All Properties</span>
+        </a>
+
+        <a class="back" href="/" aria-label="Back to home">
+            <span aria-hidden="true">⌂</span>
+            <span>Home</span>
+        </a>
+    </div>
+
+    <div class="gallery">
+        <div class="main-image-wrap">
+            {% if property.image %}
+                <img
+                    id="mainImage"
+                    class="property-image"
+                    src="{{ property.image.url }}"
+                    alt="{{ property.title }}"
+                >
+            {% elif property.gallery_images.all %}
+                {% with first_image=property.gallery_images.all|first %}
+                    {% if first_image %}
+                        <img
+                            id="mainImage"
+                            class="property-image"
+                            src="{{ first_image.image.url }}"
+                            alt="{{ property.title }}"
+                        >
+                    {% else %}
+                        <img
+                            id="mainImage"
+                            class="property-image"
+                            src="https://placehold.co/1100x500/e2f0eb/172a26?text=Property+Photo"
+                            alt="Property photo"
+                        >
+                    {% endif %}
+                {% endwith %}
+            {% else %}
+                <img
+                    id="mainImage"
+                    class="property-image"
+                    src="https://placehold.co/1100x500/e2f0eb/172a26?text=Property+Photo"
+                    alt="Property photo"
+                >
+            {% endif %}
+
+            <form
+                method="post"
+                action="{% url 'toggle_favorite' property.id %}"
+                class="favorite-form"
+            >
+                {% csrf_token %}
+                <input type="hidden" name="source" value="detail">
+                <input
+                    type="hidden"
+                    name="next"
+                    value="{{ request.get_full_path }}"
+                >
+
+                <button
+                    type="submit"
+                    class="favorite-btn{% if is_favorite %} active{% endif %}"
+                    aria-label="{% if is_favorite %}Remove from{% else %}Add to{% endif %} favorites"
+                    aria-pressed="{% if is_favorite %}true{% else %}false{% endif %}"
+                    title="{% if is_favorite %}Remove from favorites{% else %}Add to favorites{% endif %}"
+                >
+                    <span aria-hidden="true">{% if is_favorite %}♥{% else %}♡{% endif %}</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="thumbnails">
+            {% if property.image %}
+                <button
+                    class="thumbnail active"
+                    type="button"
+                    data-image="{{ property.image.url }}"
+                    aria-label="Show main property photo"
+                >
+                    <img src="{{ property.image.url }}" alt="Main photo">
+                </button>
+            {% endif %}
+
+            {% for photo in property.gallery_images.all %}
+                <button
+                    class="thumbnail{% if not property.image and forloop.first %} active{% endif %}"
+                    type="button"
+                    data-image="{{ photo.image.url }}"
+                    aria-label="Show property photo {{ forloop.counter }}"
+                >
+                    <img
+                        src="{{ photo.image.url }}"
+                        alt="Property photo {{ forloop.counter }}"
+                    >
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if property.property_video %}
+        <section class="video-section">
+            <h2>Property Video</h2>
+            <video class="property-video" controls preload="metadata">
+                <source src="{{ property.property_video.video.url }}">
+                Your browser does not support video playback.
+            </video>
+        </section>
+    {% endif %}
+
+    <section class="content">
+        <span class="tag">{{ property.get_listing_type_display }}</span>
+
+        <h1>{{ property.title }}</h1>
+
+        <p class="address">
+            {{ property.address }}, {{ property.city }}
+        </p>
+
+        <p class="price">
+            CA$ {{ property.price|floatformat:0 }}
+        </p>
+
+        <div class="features">
+            <div class="feature">
+                <strong>{{ property.bedrooms }}</strong>
+                Bedrooms
+            </div>
+
+            <div class="feature">
+                <strong>{{ property.bathrooms }}</strong>
+                Bathrooms
+            </div>
+
+            <div class="feature">
+                <strong>{{ property.area_sqft }}</strong>
+                Square Feet
+            </div>
+
+            <div class="feature">
+                <strong>{{ property.get_property_type_display }}</strong>
+                Property Type
+            </div>
+        </div>
+
+        <h2>About This Property</h2>
+        <p class="description">{{ property.description }}</p>
+
+        <a
+            class="contact"
+            href="mailto:info@torontoestates.example?subject=Property%20Inquiry"
+        >
+            Inquire About This Property
+        </a>
+    </section>
+
+</main>
+
+<footer>
+    <h3>Toronto Estates</h3>
+    <p>Helping you find your next home.</p>
+    <p>© 2026 Toronto Estates. All rights reserved.</p>
+</footer>
+
+<script>
+    const mainImage = document.getElementById('mainImage');
+    const thumbnails = document.querySelectorAll('.thumbnail');
+
+    // Create fullscreen image viewer
+    const lightbox = document.createElement('div');
+    lightbox.id = 'imageLightbox';
+
+    lightbox.innerHTML = `
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+        <button class="lightbox-prev" aria-label="Previous image">&#10094;</button>
+        <img class="lightbox-image" src="" alt="Property image">
+        <button class="lightbox-next" aria-label="Next image">&#10095;</button>
+    `;
+
+    document.body.appendChild(lightbox);
+
+    const lightboxImage = lightbox.querySelector('.lightbox-image');
+    const closeButton = lightbox.querySelector('.lightbox-close');
+    const prevButton = lightbox.querySelector('.lightbox-prev');
+    const nextButton = lightbox.querySelector('.lightbox-next');
+
+    // Collect all gallery images
+    function getGalleryImages() {
+        const images = [];
+
+        if (mainImage && mainImage.src) {
+            images.push(mainImage.src);
+        }
+
+        thumbnails.forEach((thumbnail) => {
+            const imageUrl = thumbnail.dataset.image;
+
+            if (imageUrl && !images.includes(imageUrl)) {
+                images.push(imageUrl);
+            }
+        });
+
+        return images;
+    }
+
+    let currentIndex = 0;
+
+    function showImage(index) {
+        const images = getGalleryImages();
+
+        if (!images.length) return;
+
+        currentIndex = (index + images.length) % images.length;
+        lightboxImage.src = images[currentIndex];
+        lightbox.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        lightbox.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    // Thumbnail click: update main image
+    thumbnails.forEach((thumbnail) => {
+        thumbnail.addEventListener('click', () => {
+            if (mainImage) {
+                mainImage.src = thumbnail.dataset.image;
+            }
+
+            thumbnails.forEach((item) => {
+                item.classList.remove('active');
+            });
+
+            thumbnail.classList.add('active');
+        });
+    });
+
+    // Main image click: open fullscreen viewer
+    if (mainImage) {
+        mainImage.style.cursor = 'zoom-in';
+
+        mainImage.addEventListener('click', () => {
+            const images = getGalleryImages();
+            const index = images.indexOf(mainImage.src);
+            showImage(index >= 0 ? index : 0);
+        });
+    }
+
+    // Open viewer by clicking a thumbnail
+    thumbnails.forEach((thumbnail) => {
+        thumbnail.addEventListener('dblclick', () => {
+            const images = getGalleryImages();
+            const index = images.indexOf(thumbnail.dataset.image);
+            showImage(index >= 0 ? index : 0);
+        });
+    });
+
+    closeButton.addEventListener('click', closeLightbox);
+
+    prevButton.addEventListener('click', () => {
+        showImage(currentIndex - 1);
+    });
+
+    nextButton.addEventListener('click', () => {
+        showImage(currentIndex + 1);
+    });
+
+    // Close when clicking the dark background
+    lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox) {
+            closeLightbox();
+        }
+    });
+
+    // Keyboard controls
+    document.addEventListener('keydown', (event) => {
+        if (lightbox.style.display !== 'flex') return;
+
+        if (event.key === 'Escape') closeLightbox();
+        if (event.key === 'ArrowLeft') showImage(currentIndex - 1);
+        if (event.key === 'ArrowRight') showImage(currentIndex + 1);
+    });
+    const filtersToggle = document.getElementById('filtersToggle');
+const propertyFilters = document.getElementById('propertyFilters');
+
+if (filtersToggle && propertyFilters) {
+    filtersToggle.addEventListener('click', () => {
+        const isHidden = propertyFilters.hidden;
+
+        propertyFilters.hidden = !isHidden;
+        filtersToggle.setAttribute('aria-expanded', String(isHidden));
+    });
+}
+</script>
+
+</body>
+</html>
