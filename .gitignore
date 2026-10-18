@@ -8,3 +8,6 @@ db.sqlite3
 staticfiles/
 media/
 .vscode/
+.env
+.env.*
+!.env.example
