@@ -1,0 +1,32 @@
+{% extends "index.html" %}
+
+{% block title %}My Favorites | Toronto Estates{% endblock %}
+
+{% block hero %}
+<section class="hero">
+    <h1>My Favorites</h1>
+    <p>Properties you have saved, all in one place.</p>
+</section>
+{% endblock %}
+
+{% block listing %}
+<section class="section" id="properties" data-favorites-page>
+    <h2>Saved Properties <span id="favCount">({{ properties|length }})</span></h2>
+
+    <p class="intro">Tap the heart again to remove a property from this list.</p>
+
+    <div class="grid">
+        {% for property in properties %}
+            {% include "partials/property_card.html" %}
+        {% endfor %}
+    </div>
+
+    <div class="empty" id="favEmpty"{% if properties %} hidden{% endif %}>
+        <h3>You have no favorite properties yet.</h3>
+        <p>Tap the heart on any listing to save it here.</p>
+        <a class="fav-browse" href="{% url 'home' %}#properties">Browse properties</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}{% endblock %}

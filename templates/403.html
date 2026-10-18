@@ -1,0 +1,22 @@
+{% extends "index.html" %}
+
+{% block title %}Access denied | Toronto Estates{% endblock %}
+
+{% block hero %}
+<section class="hero">
+    <h1>Access denied</h1>
+    <p>You do not have permission to open this page.</p>
+</section>
+{% endblock %}
+
+{% block listing %}
+<section class="section">
+    <div class="empty">
+        <h3>Only Admin and Agent accounts can manage properties.</h3>
+        <p>If you should have access, please ask the site owner to update your account role.</p>
+        <a class="fav-browse" href="{% url 'home' %}">Back to home</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}{% endblock %}

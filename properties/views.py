@@ -1,8 +1,10 @@
 from decimal import Decimal, InvalidOperation
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import redirect_to_login
+from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -10,11 +12,19 @@ from django.views.decorators.http import require_POST
 
 from .models import Property, Favorite
 
+PAGE_SIZE = 12
+
+# Only the columns a property card needs (faster list pages)
+CARD_FIELDS = (
+    'id', 'title', 'image', 'listing_type', 'address', 'city',
+    'price', 'bedrooms', 'bathrooms', 'area_sqft',
+)
+
 
 def home(request):
     properties = Property.objects.filter(
         is_active=True
-    ).order_by('-created_at')
+    ).only(*CARD_FIELDS).order_by('-created_at')
 
     q = request.GET.get('q', '').strip()
     city = request.GET.get('city', '').strip()
@@ -65,18 +75,30 @@ def home(request):
     elif bedrooms:
         bedrooms = ''
 
+    # Pagination: loads 12 cards at a time instead of every property
+    paginator = Paginator(properties, PAGE_SIZE)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    page_properties = list(page_obj.object_list)
+
+    # Keep the search/filter values when moving between pages
+    params = request.GET.copy()
+    params.pop('page', None)
+    querystring = params.urlencode()
+
     favorite_ids = set()
 
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and page_properties:
         favorite_ids = set(
             Favorite.objects.filter(
                 user=request.user,
-                property__is_active=True,
+                property_id__in=[p.id for p in page_properties],
             ).values_list('property_id', flat=True)
         )
 
     return render(request, 'index.html', {
-        'properties': properties,
+        'properties': page_properties,
+        'page_obj': page_obj,
+        'querystring': querystring,
         'q': q,
         'city': city,
         'listing_type': listing_type,
@@ -89,7 +111,9 @@ def home(request):
 
 def property_detail(request, property_id):
     property = get_object_or_404(
-        Property,
+        Property.objects.select_related(
+            'property_video'
+        ).prefetch_related('gallery_images'),
         id=property_id,
         is_active=True,
     )
@@ -109,8 +133,56 @@ def property_detail(request, property_id):
 
 
 @login_required
+def favorites(request):
+    saved = (
+        Favorite.objects.filter(
+            user=request.user,
+            property__is_active=True,
+        )
+        .select_related('property')
+        .order_by('-created_at')
+    )
+
+    properties = [item.property for item in saved]
+
+    return render(request, 'favorites.html', {
+        'properties': properties,
+        'favorite_ids': {p.id for p in properties},
+    })
+
+
 @require_POST
 def toggle_favorite(request, property_id):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+    fallback_url = (
+        reverse('property_detail', args=[property_id])
+        if request.POST.get('source') == 'detail'
+        else reverse('home')
+    )
+
+    next_url = request.POST.get('next', '')
+
+    if not (
+        next_url
+        and url_has_allowed_host_and_scheme(
+            next_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        )
+    ):
+        next_url = ''
+
+    # Logged-out visitors: send them to login and bring them back to the
+    # page they were on (not to the POST-only favorite URL).
+    if not request.user.is_authenticated:
+        login_url = redirect_to_login(next_url or fallback_url).url
+
+        if is_ajax:
+            return JsonResponse({'login_url': login_url}, status=401)
+
+        return redirect(login_url)
+
     property = get_object_or_404(
         Property,
         id=property_id,
@@ -122,25 +194,16 @@ def toggle_favorite(request, property_id):
         property=property,
     )
 
-    if created:
-        messages.success(request, 'Property added to favorites.')
-    else:
+    if not created:
         favorite.delete()
-        messages.success(request, 'Property removed from favorites.')
 
-    fallback_url = (
-        reverse('property_detail', args=[property.id])
-        if request.POST.get('source') == 'detail'
-        else reverse('home')
-    )
+    if is_ajax:
+        return JsonResponse({
+            'favorited': created,
+            'count': Favorite.objects.filter(
+                user=request.user,
+                property__is_active=True,
+            ).count(),
+        })
 
-    next_url = request.POST.get('next', '')
-
-    if next_url and url_has_allowed_host_and_scheme(
-        next_url,
-        allowed_hosts={request.get_host()},
-        require_https=request.is_secure(),
-    ):
-        return redirect(next_url)
-
-    return redirect(fallback_url)
+    return redirect(next_url or fallback_url)

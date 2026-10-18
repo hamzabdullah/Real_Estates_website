@@ -1,0 +1,309 @@
+{# Shared button design + click animations + AJAX favorites. Included at the end of <head> on every page. #}
+<style>
+    :root {
+        --fx-teal: #6AA698;
+        --fx-teal-dark: #438575;
+        --fx-ink: #172a26;
+    }
+
+    /* ---------- Base behaviour for every button ---------- */
+    body :is(.auth-btn, .search-submit, .filter-toggle, .apply-filters, .clear,
+             .clear-filters, .search-btn, .filters-toggle, .contact,
+             .contact-submit, .auth-submit, .back, .pager a, .fav-browse, .m-btn) {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        font-weight: 700;
+        letter-spacing: .2px;
+        -webkit-tap-highlight-color: transparent;
+        transition: transform .18s ease, box-shadow .18s ease,
+                    filter .18s ease, background-color .18s ease,
+                    border-color .18s ease, color .18s ease;
+    }
+
+    body :is(.auth-btn, .search-submit, .filter-toggle, .apply-filters, .clear,
+             .clear-filters, .search-btn, .filters-toggle, .contact,
+             .contact-submit, .auth-submit, .back, .pager a, .fav-browse, .m-btn):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 22px rgba(23, 42, 38, .18);
+    }
+
+    body :is(.auth-btn, .search-submit, .filter-toggle, .apply-filters, .clear,
+             .clear-filters, .search-btn, .filters-toggle, .contact,
+             .contact-submit, .auth-submit, .back, .pager a, .fav-browse, .m-btn):active {
+        transform: translateY(0) scale(.96);
+        box-shadow: none;
+    }
+
+    body :is(.auth-btn, .search-submit, .filter-toggle, .apply-filters, .clear,
+             .clear-filters, .search-btn, .filters-toggle, .contact,
+             .contact-submit, .auth-submit, .back, .pager a, .fav-browse, .m-btn):focus-visible {
+        outline: 3px solid var(--fx-teal-dark);
+        outline-offset: 3px;
+    }
+
+    /* ---------- Primary buttons (teal gradient) ---------- */
+    body :is(.signup-btn, .logout-btn, .apply-filters, .search-btn, .contact,
+             .contact-submit, .auth-submit, .pager a, .fav-browse, .m-primary) {
+        background-image: linear-gradient(135deg, var(--fx-teal) 0%, var(--fx-teal-dark) 100%);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+    }
+
+    body :is(.signup-btn, .logout-btn, .apply-filters, .search-btn, .contact,
+             .contact-submit, .auth-submit, .pager a, .fav-browse, .m-primary):hover {
+        filter: brightness(1.08);
+    }
+
+    /* Dark search button keeps its dark colour */
+    body .search-submit {
+        background-image: linear-gradient(135deg, #172a26 0%, #31584e 100%);
+        border-radius: 10px;
+    }
+
+    /* ---------- Secondary buttons (soft outline) ---------- */
+    body :is(.filter-toggle, .filters-toggle, .clear, .clear-filters, .google-btn, .m-light) {
+        border-radius: 10px;
+    }
+
+    body :is(.filter-toggle, .filters-toggle, .clear, .clear-filters, .google-btn, .m-light):hover {
+        background-color: #eaf4f0;
+        border-color: var(--fx-teal);
+    }
+
+    body nav .auth-btn:not(.signup-btn):not(.logout-btn):not(.google-btn):hover {
+        background-color: #eaf4f0;
+    }
+
+    /* ---------- Click ripple ---------- */
+    .fx-ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: .28;
+        pointer-events: none;
+        transform: scale(0);
+        animation: fx-ripple .6s ease-out forwards;
+    }
+
+    @keyframes fx-ripple {
+        to { transform: scale(1); opacity: 0; }
+    }
+
+    /* ---------- Favorite heart ---------- */
+    .favorite-btn:active { transform: scale(.88); }
+
+    .favorite-btn.pop span {
+        display: inline-block;
+        animation: fx-heart-pop .5s cubic-bezier(.2, 1.4, .4, 1);
+    }
+
+    @keyframes fx-heart-pop {
+        0%   { transform: scale(1); }
+        35%  { transform: scale(1.55); }
+        70%  { transform: scale(.88); }
+        100% { transform: scale(1); }
+    }
+
+    .favorite-btn.is-loading { pointer-events: none; opacity: .75; }
+
+    /* ---------- Cards ---------- */
+    .property { animation: fx-rise .45s ease both; }
+
+    @keyframes fx-rise {
+        from { opacity: 0; transform: translateY(14px); }
+        to   { opacity: 1; transform: none; }
+    }
+
+    .property.removing {
+        opacity: 0;
+        transform: scale(.9);
+        transition: opacity .3s ease, transform .3s ease;
+        pointer-events: none;
+    }
+
+    /* ---------- Pager ---------- */
+    .pager {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 34px;
+    }
+
+    .pager a {
+        display: inline-block;
+        padding: 11px 20px;
+        text-decoration: none;
+    }
+
+    .pager span { color: #666; font-weight: 600; }
+
+    .fav-browse {
+        display: inline-block;
+        margin-top: 14px;
+        padding: 11px 20px;
+        text-decoration: none;
+    }
+
+    /* ---------- Toast ---------- */
+    #fx-toast {
+        position: fixed;
+        left: 50%;
+        bottom: 26px;
+        transform: translate(-50%, 20px);
+        background: var(--fx-ink);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s ease, transform .25s ease;
+        z-index: 9999;
+        max-width: 90vw;
+        text-align: center;
+    }
+
+    #fx-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (prefers-reduced-motion: reduce) {
+        .fx-ripple, .favorite-btn.pop span, .property { animation: none !important; }
+        body :is(.auth-btn, .search-submit, .filter-toggle, .apply-filters, .clear,
+                 .clear-filters, .search-btn, .filters-toggle, .contact,
+                 .contact-submit, .auth-submit, .back, .pager a, .fav-browse, .m-btn) {
+            transition: none;
+        }
+    }
+</style>
+
+<script>
+(function () {
+    var BUTTONS = '.auth-btn, .search-submit, .filter-toggle, .apply-filters, .clear, ' +
+                  '.clear-filters, .search-btn, .filters-toggle, .contact, ' +
+                  '.contact-submit, .auth-submit, .back, .pager a, .fav-browse, .m-btn';
+
+    var reduceMotion = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ---- Ripple on click ---- */
+    document.addEventListener('pointerdown', function (e) {
+        if (reduceMotion || !e.target.closest) return;
+        var btn = e.target.closest(BUTTONS);
+        if (!btn || btn.disabled) return;
+
+        var rect = btn.getBoundingClientRect();
+        var size = Math.max(rect.width, rect.height) * 2;
+        var dot = document.createElement('span');
+
+        dot.className = 'fx-ripple';
+        dot.style.width = dot.style.height = size + 'px';
+        dot.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        dot.style.top = (e.clientY - rect.top - size / 2) + 'px';
+
+        btn.appendChild(dot);
+        dot.addEventListener('animationend', function () { dot.remove(); });
+    });
+
+    /* ---- Toast ---- */
+    var toastTimer;
+    function toast(text) {
+        var el = document.getElementById('fx-toast');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'fx-toast';
+            el.setAttribute('role', 'status');
+            el.setAttribute('aria-live', 'polite');
+            document.body.appendChild(el);
+        }
+        el.textContent = text;
+        void el.offsetWidth;
+        el.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2200);
+    }
+
+    /* ---- Favorite heart (no page reload) ---- */
+    function setHeart(btn, on) {
+        var label = on ? 'Remove from favorites' : 'Add to favorites';
+        btn.classList.toggle('active', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        btn.setAttribute('aria-label', label);
+        btn.setAttribute('title', label);
+        btn.firstElementChild.textContent = on ? '\u2665' : '\u2661';
+
+        if (!reduceMotion) {
+            btn.classList.remove('pop');
+            void btn.offsetWidth;
+            btn.classList.add('pop');
+        }
+    }
+
+    function removeFromFavoritesPage(btn, count) {
+        var card = btn.closest('.property');
+        var countEl = document.getElementById('favCount');
+        if (countEl) countEl.textContent = '(' + count + ')';
+        if (!card) return;
+
+        card.classList.add('removing');
+        setTimeout(function () {
+            card.remove();
+            if (count === 0) {
+                var empty = document.getElementById('favEmpty');
+                if (empty) empty.hidden = false;
+            }
+        }, 320);
+    }
+
+    document.addEventListener('submit', function (e) {
+        var form = e.target;
+        if (!form.matches || !form.matches('.favorite-form') || !window.fetch) return;
+
+        var btn = form.querySelector('.favorite-btn');
+        if (!btn) return;
+
+        e.preventDefault();
+        if (btn.classList.contains('is-loading')) return;
+        btn.classList.add('is-loading');
+
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(function (res) {
+            if (res.status === 401) {
+                return res.json().then(function (data) {
+                    window.location.href = data.login_url;
+                    return null;
+                });
+            }
+            if (!res.ok) throw new Error('Request failed');
+            return res.json();
+        })
+        .then(function (data) {
+            if (!data) return;
+            setHeart(btn, data.favorited);
+            toast(data.favorited ? 'Added to favorites' : 'Removed from favorites');
+
+            if (!data.favorited && document.querySelector('[data-favorites-page]')) {
+                removeFromFavoritesPage(btn, data.count);
+            }
+        })
+        .catch(function () {
+            toast('Something went wrong. Please try again.');
+        })
+        .then(function () {
+            btn.classList.remove('is-loading');
+        });
+    });
+})();
+</script>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toronto Estates | Find Your Dream Home</title>
+    <title>{% block title %}Toronto Estates | Find Your Dream Home{% endblock %}</title>
 
     <style>
         * {
@@ -487,6 +487,7 @@
         }
 
     </style>
+    {% include "partials/ui_effects.html" %}
 </head>
 
 <body>
@@ -502,8 +503,13 @@
 
     <div class="nav-links">
         <a href="/">Home</a>
-        <a href="#properties">Buy</a>
-        <a href="#properties">Rent</a>
+        <a href="{% url 'home' %}#properties">Buy</a>
+        <a href="{% url 'home' %}#properties">Rent</a>
+        <a href="{% url 'favorites' %}" class="nav-fav">&#9829; Favorites</a>
+        {% if user.is_superuser or user.role == 'ADMIN' or user.role == 'AGENT' %}
+            <a href="{% url 'my_properties' %}">My Properties</a>
+            <a href="{% url 'add_property' %}" class="auth-btn signup-btn">+ Add Property</a>
+        {% endif %}
         
         <a href="{% url 'contactus:contact' %}">Contact</a>
 
@@ -539,6 +545,7 @@
     </div>
 </nav>
 
+{% block hero %}
 <section class="hero">
     <h1>Find a Place You'll Love</h1>
     <p>Discover homes and properties across Toronto.</p>
@@ -637,7 +644,9 @@
         </div>
     </form>
 </section>
+{% endblock %}
 
+{% block listing %}
 <section class="section" id="properties">
     <h2>Available Properties</h2>
 
@@ -651,71 +660,7 @@
 
     <div class="grid">
         {% for property in properties %}
-            <article class="property">
-                <div class="property-image-wrap">
-                    <a class="property-image-link"
-                       href="{% url 'property_detail' property.id %}"
-                       aria-label="View {{ property.title }}">
-
-                        {% if property.image %}
-                            <img
-                                src="{{ property.image.url }}"
-                                alt="{{ property.title }}"
-                                loading="lazy">
-                        {% else %}
-                            <img
-                                src="https://placehold.co/600x400/e2f0eb/172a26?text=Property+Photo"
-                                alt="Property photo coming soon"
-                                loading="lazy">
-                        {% endif %}
-                    </a>
-
-                    <form method="post"
-                          action="{% url 'toggle_favorite' property.id %}"
-                          class="favorite-form">
-                        {% csrf_token %}
-                        <input type="hidden" name="source" value="home">
-                        <input type="hidden"
-                               name="next"
-                               value="{{ request.get_full_path }}">
-
-                        <button
-                            type="submit"
-                            class="favorite-btn{% if property.id in favorite_ids %} active{% endif %}"
-                            aria-label="{% if property.id in favorite_ids %}Remove from{% else %}Add to{% endif %} favorites"
-                            aria-pressed="{% if property.id in favorite_ids %}true{% else %}false{% endif %}"
-                            title="{% if property.id in favorite_ids %}Remove from favorites{% else %}Add to favorites{% endif %}">
-                            <span aria-hidden="true">{% if property.id in favorite_ids %}♥{% else %}♡{% endif %}</span>
-                        </button>
-                    </form>
-                </div>
-
-                <div class="property-info">
-                    <span class="tag">
-                        {{ property.get_listing_type_display }}
-                    </span>
-
-                    <h3>
-                        <a href="{% url 'property_detail' property.id %}">
-                            {{ property.title }}
-                        </a>
-                    </h3>
-
-                    <p>{{ property.address }}, {{ property.city }}</p>
-
-                    <p class="price">
-                        CA$ {{ property.price|floatformat:0 }}
-                    </p>
-
-                    <p class="details">
-                        {{ property.bedrooms }} Beds
-                        &nbsp;|&nbsp;
-                        {{ property.bathrooms }} Baths
-                        &nbsp;|&nbsp;
-                        {{ property.area_sqft }} sqft
-                    </p>
-                </div>
-            </article>
+            {% include "partials/property_card.html" %}
         {% empty %}
             <div class="empty">
                 <h3>No matching properties found.</h3>
@@ -726,7 +671,20 @@
             </div>
         {% endfor %}
     </div>
+
+    {% if page_obj.has_other_pages %}
+        <div class="pager">
+            {% if page_obj.has_previous %}
+                <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}#properties">&larr; Previous</a>
+            {% endif %}
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}#properties">Next &rarr;</a>
+            {% endif %}
+        </div>
+    {% endif %}
 </section>
+{% endblock %}
 
 <footer id="contact">
     <h3>Toronto Estates</h3>
@@ -734,6 +692,7 @@
     <p>© 2026 Toronto Estates. All rights reserved.</p>
 </footer>
 
+{% block scripts %}
 <script>
     const filterToggle = document.getElementById('filterToggle');
     const filterPanel = document.getElementById('filterPanel');
@@ -759,6 +718,7 @@
         filterToggle.setAttribute('aria-expanded', 'true');
     }
 </script>
+{% endblock %}
 
 </body>
 </html>

@@ -498,7 +498,24 @@ nav {
     letter-spacing: -0.5px;
 }
 
-nav > a {
+.logo .logo-link,
+.logo .logo-link:visited,
+.logo .logo-link:hover,
+.logo .logo-link:active {
+    color: #285f52;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+nav .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+nav > a,
+nav .nav-actions > a {
     background: #ffffffd9;
     color: #285f52;
     padding: 11px 18px;
@@ -507,7 +524,8 @@ nav > a {
     transition: .2s ease;
 }
 
-nav > a:hover {
+nav > a:hover,
+nav .nav-actions > a:hover {
     background: #fff;
     transform: translateY(-2px);
 }
@@ -581,13 +599,20 @@ nav > a:hover {
     }
 }  
     </style>
+    {% include "partials/ui_effects.html" %}
 </head>
 
 <body>
 
 <nav>
-    <div class="logo">Toronto Estates.</div>
-    <a href="/">Home</a>
+    <div class="logo"><a href="/" class="logo-link">Toronto Estates.</a></div>
+    <div class="nav-actions">
+        <a href="/">Home</a>
+        <a href="{% url 'favorites' %}">&#9829; Favorites</a>
+        {% if user.is_superuser or user.role == 'ADMIN' or user.role == 'AGENT' %}
+            <a href="{% url 'my_properties' %}">My Properties</a>
+        {% endif %}
+    </div>
 </nav>
 
 <section class="top-search">
@@ -671,10 +696,6 @@ nav > a:hover {
             <span>All Properties</span>
         </a>
 
-        <a class="back" href="/" aria-label="Back to home">
-            <span aria-hidden="true">⌂</span>
-            <span>Home</span>
-        </a>
     </div>
 
     <div class="gallery">
@@ -746,7 +767,7 @@ nav > a:hover {
                     data-image="{{ property.image.url }}"
                     aria-label="Show main property photo"
                 >
-                    <img src="{{ property.image.url }}" alt="Main photo">
+                    <img src="{{ property.image.url }}" alt="Main photo" loading="lazy" decoding="async">
                 </button>
             {% endif %}
 
@@ -760,6 +781,8 @@ nav > a:hover {
                     <img
                         src="{{ photo.image.url }}"
                         alt="Property photo {{ forloop.counter }}"
+                        loading="lazy"
+                        decoding="async"
                     >
                 </button>
             {% endfor %}

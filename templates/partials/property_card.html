@@ -1,0 +1,71 @@
+<article class="property">
+    <div class="property-image-wrap">
+        <a class="property-image-link"
+           href="{% url 'property_detail' property.id %}"
+           aria-label="View {{ property.title }}">
+
+            {% if property.image %}
+                <img
+                    src="{{ property.image.url }}"
+                    alt="{{ property.title }}"
+                    width="600"
+                    height="400"
+                    loading="lazy"
+                    decoding="async">
+            {% else %}
+                <img
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Crect width='100%25' height='100%25' fill='%23e2f0eb'/%3E%3Ctext x='50%25' y='50%25' fill='%23172a26' font-family='Arial' font-size='28' text-anchor='middle' dominant-baseline='middle'%3EProperty Photo%3C/text%3E%3C/svg%3E"
+                    alt="Property photo coming soon"
+                    width="600"
+                    height="400"
+                    loading="lazy"
+                    decoding="async">
+            {% endif %}
+        </a>
+
+        <form method="post"
+              action="{% url 'toggle_favorite' property.id %}"
+              class="favorite-form">
+            {% csrf_token %}
+            <input type="hidden" name="source" value="home">
+            <input type="hidden"
+                   name="next"
+                   value="{{ request.get_full_path }}">
+
+            <button
+                type="submit"
+                class="favorite-btn{% if property.id in favorite_ids %} active{% endif %}"
+                aria-label="{% if property.id in favorite_ids %}Remove from{% else %}Add to{% endif %} favorites"
+                aria-pressed="{% if property.id in favorite_ids %}true{% else %}false{% endif %}"
+                title="{% if property.id in favorite_ids %}Remove from favorites{% else %}Add to favorites{% endif %}">
+                <span aria-hidden="true">{% if property.id in favorite_ids %}♥{% else %}♡{% endif %}</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="property-info">
+        <span class="tag">
+            {{ property.get_listing_type_display }}
+        </span>
+
+        <h3>
+            <a href="{% url 'property_detail' property.id %}">
+                {{ property.title }}
+            </a>
+        </h3>
+
+        <p>{{ property.address }}, {{ property.city }}</p>
+
+        <p class="price">
+            CA$ {{ property.price|floatformat:0 }}
+        </p>
+
+        <p class="details">
+            {{ property.bedrooms }} Beds
+            &nbsp;|&nbsp;
+            {{ property.bathrooms }} Baths
+            &nbsp;|&nbsp;
+            {{ property.area_sqft }} sqft
+        </p>
+    </div>
+</article>
