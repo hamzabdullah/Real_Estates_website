@@ -1,0 +1,85 @@
+
+
+{% extends "index.html" %}
+
+{% block title %}My Properties | Toronto Estates{% endblock %}
+
+{% block hero %}
+<section style="max-width:980px;margin:40px auto;padding:0 20px;">
+    {% include "partials/manage_styles.html" %}
+
+    <div class="manage-wrap">
+        {% include "partials/messages.html" %}
+
+        <div class="manage-head">
+            <div>
+                <h2>My Properties</h2>
+                <p>Manage your property listings.</p>
+            </div>
+            <a href="{% url 'add_property' %}" class="m-btn m-light">
+                + Add Property
+            </a>
+        </div>
+
+        {% if properties %}
+            <div style="display:grid;gap:16px;">
+                {% for property in properties %}
+                    <article class="form-card">
+                        <div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+                            <div>
+                                <h3>{{ property.title }}</h3>
+                                <p>{{ property.address }}, {{ property.city }}</p>
+                                <p>
+                                    {{ property.get_listing_type_display }} ·
+                                    {{ property.get_property_type_display }}
+                                </p>
+                                <p><strong>CA${{ property.price|floatformat:0 }}</strong></p>
+                                <p>
+                                    Status:
+                                    {% if property.is_active %}Visible{% else %}Hidden{% endif %}
+                                </p>
+                                {% if show_agent %}
+                                    <p>Agent: {{ property.agent|default:"Unassigned" }}</p>
+                                {% endif %}
+                                {% if property.saved_count != None %}
+                                    <p>Favorites: {{ property.saved_count }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;">
+                                <a class="m-btn m-light"
+                                   href="{% url 'edit_property' property.id %}">
+                                    Edit
+                                </a>
+
+                                <form method="post"
+                                      action="{% url 'toggle_property_active' property.id %}">
+                                    {% csrf_token %}
+                                    <button class="m-btn m-light" type="submit">
+                                        {% if property.is_active %}Hide{% else %}Publish{% endif %}
+                                    </button>
+                                </form>
+
+                                <form method="post"
+                                      action="{% url 'delete_property' property.id %}"
+                                      onsubmit="return confirm('Delete this property permanently?');">
+                                    {% csrf_token %}
+                                    <button class="m-btn m-danger" type="submit">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="form-card">
+                <h3>No properties yet</h3>
+                <p>Add your first listing to get started.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+

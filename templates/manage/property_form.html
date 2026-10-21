@@ -1,0 +1,121 @@
+
+{% extends "index.html" %}
+
+{% block title %}
+    {% if is_edit %}Edit Property{% else %}Add Property{% endif %} | Toronto Estates
+{% endblock %}
+
+{% block hero %}
+<section style="max-width:980px;margin:40px auto;padding:0 20px;">
+    {% include "partials/manage_styles.html" %}
+
+    <div class="manage-wrap">
+        {% include "partials/messages.html" %}
+
+        <div class="manage-head">
+            <div>
+                <h2>{% if is_edit %}Edit Property{% else %}Add Property{% endif %}</h2>
+                <p>Enter the property details below.</p>
+            </div>
+            <a href="{% url 'my_properties' %}" class="m-btn m-light">
+                Back to My Properties
+            </a>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="form-card">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="flash flash-error">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <h3 class="form-section-title">Property Details</h3>
+
+            <div class="form-grid">
+                {% for field in form %}
+                    {% if field.name != 'image' and field.name != 'gallery' and field.name != 'video' and field.name != 'remove_video' %}
+                        <div class="field {% if field.name == 'description' or field.name == 'address' %}wide{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small>{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <p class="flash-error">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <h3 class="form-section-title">Photos</h3>
+
+            <div class="form-grid">
+                <div class="field wide">
+                    <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+                    {{ form.image }}
+                    {% if property.image %}
+                        <p>Current main photo: {{ property.image.name }}</p>
+                    {% endif %}
+                    {% if form.image.help_text %}<small>{{ form.image.help_text }}</small>{% endif %}
+                    {% for error in form.image.errors %}<p class="flash-error">{{ error }}</p>{% endfor %}
+                </div>
+
+                <div class="field wide">
+                    <label for="{{ form.gallery.id_for_label }}">{{ form.gallery.label }}</label>
+                    {{ form.gallery }}
+                    {% if form.gallery.help_text %}<small>{{ form.gallery.help_text }}</small>{% endif %}
+                    {% for error in form.gallery.errors %}<p class="flash-error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            {% if gallery_images %}
+                <h4 style="margin-top:20px;">Existing gallery photos</h4>
+                <div class="form-grid">
+                    {% for photo in gallery_images %}
+                        <label class="field">
+                            <img src="{{ photo.image.url }}" alt="Property photo"
+                                 style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;">
+                            <span>
+                                <input type="checkbox" name="remove_images" value="{{ photo.id }}">
+                                Remove this photo
+                            </span>
+                        </label>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <h3 class="form-section-title">Property Video (Optional)</h3>
+
+            <div class="form-grid">
+                <div class="field wide">
+                    <label for="{{ form.video.id_for_label }}">{{ form.video.label }}</label>
+                    {{ form.video }}
+                    {% if property.property_video %}
+                        <p>Current video: {{ property.property_video.video.name }}</p>
+                    {% endif %}
+                    {% if form.video.help_text %}<small>{{ form.video.help_text }}</small>{% endif %}
+                    {% for error in form.video.errors %}<p class="flash
+		
+{{ error }}</p>{% endfor %}
+                </div>
+
+                {% if is_edit and property.property_video %}
+                    <div class="field wide">
+                        <label for="{{ form.remove_video.id_for_label }}">
+                            {{ form.remove_video }} {{ form.remove_video.label }}
+                        </label>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;">
+                <button type="submit" class="m-btn m-light">
+                    {% if is_edit %}Save Changes{% else %}Add Property{% endif %}
+                </button>
+                <a href="{% url 'my_properties' %}" class="m-btn m-light">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
